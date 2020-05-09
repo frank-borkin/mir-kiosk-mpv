@@ -1,5 +1,5 @@
 name: mir-kiosk-mpv
-version: 1.0.0
+version: 1.0.1
 summary: Plays videos in Kiosk mode
 description: |
   A snap which uses mpv and mir-kiosk to play videos on a loop
@@ -12,10 +12,13 @@ parts:
     plugin: nil
     stage-packages:
       - mpv
+      - libslang2
+      - freeglut3
+      - libglu1-mesa
 
 apps:
   mir-kiosk-mpv:
-    command: run-daemon wayland-launch $SNAP/usr/bin/mpv $(find /media -type f -type f | grep -E "\.webm$|\.flv$|\.vob$|\.ogg$|\.ogv$|\.drc$|\.gifv$|\.mng$|\.avi$|\.mov$|\.qt$|\.wmv$|\.yuv$|\.rm$|\.rmvb$|/.asf$|\.amv$|\.mp4$|\.m4v$|\.mp4$|\.m?v$|\.svi$|\.3gp$|\.flv$|\.f4v$")
+    command: /usr/bin/mpv $(find /media -type f -type f | grep -E "\.webm$|\.flv$|\.vob$|\.ogg$|\.ogv$|\.drc$|\.gifv$|\.mng$|\.avi$|\.mov$|\.qt$|\.wmv$|\.yuv$|\.rm$|\.rmvb$|/.asf$|\.amv$|\.mp4$|\.m4v$|\.mp4$|\.m?v$|\.svi$|\.3gp$|\.flv$|\.f4v$")
     daemon: simple
     restart-condition: always
     environment:
