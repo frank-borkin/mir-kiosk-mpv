@@ -1,10 +1,10 @@
 name: mir-kiosk-mpv
-version: 1.0.1
+version: 1.0.2
 summary: Plays videos in Kiosk mode
-description: |
-  A snap which uses mpv and mir-kiosk to play videos on a loop
-
-confinement: devmode
+description: A snap which uses mpv and mir-kiosk to play videos on a loop
+confinement: strict
+grade: stable
+license: MIT
 base: core18
 
 parts:
@@ -15,13 +15,41 @@ parts:
       - libslang2
       - freeglut3
       - libglu1-mesa
+      - libfstrcmp0
+      - libpulse0
+      - libsndio6.1
+      - libaudio2
+
+  mesa:
+    plugin: nil
+    stage-packages:
+      - libgl1-mesa-dri
+      - va-driver-all
+
+  mir-kiosk-snap-launch:
+    plugin: dump
+    source: https://github.com/MirServer/mir-kiosk-snap-launch.git
+    override-build:  $SNAPCRAFT_PART_BUILD/build-with-plugs.sh alsa avahi-observe hardware-observe locale-control mount-observe network-observe removable-media shutdown system-observe wayland
 
 apps:
-  mir-kiosk-mpv:
-    command: /usr/bin/mpv $(find /media -type f -type f | grep -E "\.webm$|\.flv$|\.vob$|\.ogg$|\.ogv$|\.drc$|\.gifv$|\.mng$|\.avi$|\.mov$|\.qt$|\.wmv$|\.yuv$|\.rm$|\.rmvb$|/.asf$|\.amv$|\.mp4$|\.m4v$|\.mp4$|\.m?v$|\.svi$|\.3gp$|\.flv$|\.f4v$")
+  daemon:
+    command: run-daemon wayland-launch $SNAP/usr/bin/kodi
     daemon: simple
     restart-condition: always
     environment:
+      # Prep PulseAudio
       PULSE_SYSTEM: 1
       PULSE_RUNTIME_PATH: /var/run/pulse
 
+  mir-kiosk-mpv:
+    command: wayland-launch $SNAP/usr/bin/mpv $(find /media -type f -type f | grep -E "\.webm$|\.flv$|\.vob$|\.ogg$|\.ogv$|\.drc$|\.gifv$|\.mng$|\.avi$|\.mov$|\.qt$|\.wmv$|\.yuv$|\.rm$|\.rmvb$|/.asf$|\.amv$|\.mp4$|\.m4v$|\.mp4$|\.m?v$|\.svi$|\.3gp$|\.flv$|\.f4v$")
+    environment:
+      # Prep PulseAudio
+      PULSE_SERVER: unix:$XDG_RUNTIME_DIR/../pulse/native
+
+plugs:
+  wayland:
+  opengl:
+  audio-playback:
+  pulseaudio:
+  alsa:
