@@ -1,0 +1,24 @@
+name: mir-kiosk-mpv
+version: 1.0.0
+summary: Plays videos in Kiosk mode
+description: |
+  A snap which uses mpv and mir-kiosk to play videos on a loop
+
+confinement: devmode
+base: core18
+
+parts:
+  mir-kiosk-mpv:
+    plugin: nil
+    stage-packages:
+      - mpv
+
+apps:
+  mir-kiosk-mpv:
+    command: run-daemon wayland-launch $SNAP/usr/bin/mpv $(find /media -type f -exec file -N -i -- {} + | sed -n 's!: video/[^:]*$!!p')
+    daemon: simple
+    restart-condition: always
+    environment:
+      PULSE_SYSTEM: 1
+      PULSE_RUNTIME_PATH: /var/run/pulse
+
