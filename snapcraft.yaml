@@ -1,5 +1,5 @@
 name: mir-kiosk-mpv
-version: 1.0.2
+version: 1.0.3
 summary: Plays videos in Kiosk mode
 description: A snap which uses mpv and mir-kiosk to play videos on a loop
 confinement: strict
